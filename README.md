@@ -1,5 +1,19 @@
 # CarreraCUCEI
 
+## Dependencies
+We use **React Navigation**, the next dependencies are needed (run this commands inside folder proyect): <br> 
+
+`npm install @react-navigation/native` <br>
+`npm install react-native-screens react-native-safe-area-context` <br>
+`npm install @react-navigation/native-stack` <br>
+
+For more information visit: https://reactnavigation.org/docs/hello-react-navigation
+
+Also you will need: 
+- NodeJS installed.
+- Java JDK.
+- Android Studio.
+
 ## How to Run
 Run this command inside folder project: <br> 
 
@@ -16,11 +30,4 @@ Also is recommended to use your cellphone instead simulating one on Android Stud
 using USB and enable developer options should be enough.
 
 
-## Dependencies
-We use **React Navigation**, the next dependencies are needed (run this commands inside folder proyect): <br> 
 
-`npm install @react-navigation/native` <br>
-`npm install react-native-screens react-native-safe-area-context` <br>
-`npm install @react-navigation/native-stack` <br>
-
-For more information visit: https://reactnavigation.org/docs/hello-react-navigation
