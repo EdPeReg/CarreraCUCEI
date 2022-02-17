@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // Dimensiosn will known our cellphone resolution.
-import { View, Text , ImageBackground , StyleSheet, Dimensions} from 'react-native';
+import { View, Text , ImageBackground , StyleSheet, Dimensions, TextInput } from 'react-native';
 import { Input, Icon , Button } from 'react-native-elements';
 
 export default class Ventana2 extends Component {
