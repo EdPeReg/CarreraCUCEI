@@ -11,7 +11,7 @@ export default class Registro extends Component {
   render() {
     return (
       <View>
-        <Text> Registro </Text>
+        <Text> Registro oh yeah </Text>
       </View>
     );
   }
