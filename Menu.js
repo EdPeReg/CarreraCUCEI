@@ -20,7 +20,7 @@ export default class Menu extends Component {
       
     return (
         <NavigationContainer>
-          <Stack.Navigator>
+          <Stack.Navigator screenOptions={{headerShown:false}}>
               {/* Habra tantos stack como ventanas importemos. El orden tiene que ver. */}
               <Stack.Screen name="Login" component={LOGIN} />
               <Stack.Screen name="Registro" component={REGISTRO} />
