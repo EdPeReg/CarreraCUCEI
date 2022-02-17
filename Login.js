@@ -12,7 +12,7 @@ export default class Login extends Component {
     };
   }
 
-  render() {
+    render() {
     const navigation = this.context;
 
     const btnLogin = () => {
@@ -23,13 +23,13 @@ export default class Login extends Component {
 
     return (
       <View>
-        {/* Poner aqui la imagne de telegram del profe */}
-        <ImageBackground style={styles.bg} source={require("./Imagenes/login_modified.png")}>
+        <ImageBackground style={styles.bg} source={require("./Imagenes/background.png")}>
           <View style={styles.input}>
-            {/* User field. */}
+            {/* Codigo field. */}
             <Input
                 placeholder='Codigo'
                 placeholderTextColor='white'
+                color="white"
                 leftIcon={
                   <Icon 
                     type='font-awesome'
@@ -46,6 +46,7 @@ export default class Login extends Component {
             <Input
                 placeholder='Password'
                 placeholderTextColor='white'
+                color="white"
                 leftIcon={
                   <Icon
                     type='font-awesome'
