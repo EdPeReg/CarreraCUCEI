@@ -6,20 +6,45 @@ import { Input, Icon } from 'react-native-elements';
 
 export default class Login extends Component {
   static contextType = NavigationContext;
+
   constructor(props) {
     super(props);
     this.state = {
+      // Variables to use to save the Input information.
+      code:"",
+      password:"",
     };
   }
 
     render() {
-    const navigation = this.context;
+      const navigation = this.context;
 
-    const btnLogin = () => {
-        // Mostrara en la consola este mensaje.
-        console.log("Preisonado")
-        navigation.navigate("Registro");
+      /* Allows us to change to Registro window. */
+      const btn_code = () => {
+          console.log("Button registrar pressed");
+          // Allows us to move to our Registro window.
+          navigation.navigate("Registro");
     }  
+      
+    /* Validate codigo and password input fields. */
+    const btn_send = () => {
+      console.log("Button enviar pressed");
+      // Pegar aqui lo de xml, enviar informacion y recibir del servidor.
+      // https://www.w3schools.com/xml/xml_http.asp
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          console.log(xhttp.responseText);
+        }
+      };
+
+      // GET is the server method, communication channel.
+      // The second parameter should be our URL from webhost page, this URL needs to have the correct format
+      // and needs to use the correct variables. 
+      // state is to show values, setState is to assign values. 
+      xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Temporal.php?code="+this.state.code+"&password="+this.state.password, true);
+      xhttp.send();
+    }
 
     return (
       <View>
@@ -30,6 +55,8 @@ export default class Login extends Component {
                 placeholder='Codigo'
                 placeholderTextColor='white'
                 color="white"
+                // Save the input value to our variable code.
+                onChangeText={code => this.setState({code})}
                 leftIcon={
                   <Icon 
                     type='font-awesome'
@@ -47,6 +74,8 @@ export default class Login extends Component {
                 placeholder='Password'
                 placeholderTextColor='white'
                 color="white"
+                // Save the input value to our variable password.
+                onChangeText={password => this.setState({password})}
                 leftIcon={
                   <Icon
                     type='font-awesome'
@@ -58,15 +87,16 @@ export default class Login extends Component {
             />
           </View>
       
-
             {/* Allows us to put a button side by side. */}
             <View style={{ flexDirection:"row" }}>
-
-              {/* Enviar button */}
-              <Image style={styles.btn_send} source={require("./Imagenes/btn_send.png")} />
+              
+              <TouchableOpacity onPress={btn_send}>
+                {/* Enviar button */}
+                <Image style={styles.btn_send} source={require("./Imagenes/btn_send.png")} />
+              </TouchableOpacity>
 
               {/* Posicionar correctamente en el boton, llamara una funcion que se llama login. */}
-              <TouchableOpacity onPress={btnLogin}>
+              <TouchableOpacity onPress={btn_code}>
                   {/* Registrarse button */}
                   <Image style={styles.btn_reg} source={require("./Imagenes/btn_register.png")} />
       
@@ -80,6 +110,8 @@ export default class Login extends Component {
   }
 }
 
+// This values are just a little hack, are used to get the correct
+// size for background image.
 const win = Dimensions.get('window');
 const ratio = win.width / 1080;
 
@@ -91,7 +123,6 @@ const styles = StyleSheet.create({
     },
 
     btn_send:{
-        borderWidth:3,
         borderColor: "white",
         marginTop: 80,
         marginLeft: 50,
