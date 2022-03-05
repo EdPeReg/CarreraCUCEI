@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // TouchableOpacity nos permite onclick, es transparente.
-import { View, Text, ImageBackground, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ImageBackground, StyleSheet, Dimensions, TouchableOpacity, Image, Alert } from 'react-native';
 import { NavigationContext } from '@react-navigation/native';
 import { Input, Icon } from 'react-native-elements';
 
@@ -24,8 +24,8 @@ export default class Login extends Component {
           console.log("Button registrar pressed");
           // Allows us to move to our Registro window.
           navigation.navigate("Registro");
-    }  
-      
+    }
+
     /* Validate codigo and password input fields. */
     const btn_send = () => {
       console.log("Button enviar pressed");
@@ -35,16 +35,37 @@ export default class Login extends Component {
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           console.log(xhttp.responseText);
-        }
-      };
 
-      // GET is the server method, communication channel.
-      // The second parameter should be our URL from webhost page, this URL needs to have the correct format
-      // and needs to use the correct variables. 
-      // state is to show values, setState is to assign values. 
-      xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Temporal.php?code="+this.state.code+"&password="+this.state.password, true);
-      xhttp.send();
+          if(xhttp.responseText == "1")
+          {
+            // Usuario reconocido.
+            console.log("Usuario certificado");
+          }
+
+          if(xhttp.responseText == "2")
+          {
+            Alert.alert("Error!!", "Password erroneo intente de nuevo", [
+              { text:"OK", onPress:() => console.log("pass error")}
+            ]);
+          }
+
+          if(xhttp.responseText == "0")
+          {
+            Alert.alert("Error!!", "Usuario no reconocido", [
+              { text:"OK", onPress:() => console.log("user error")}
+            ]);
+          }
+        }
+
     }
+
+    // GET is the server method, communication channel.
+    // The second parameter should be our URL from webhost page, this URL needs to have the correct format
+    // and needs to use the correct variables.
+    // state is to show values, setState is to assign values.
+    xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Login.php?codigo="+this.state.code+"&password="+this.state.password, true);
+    xhttp.send();
+  }
 
     return (
       <View>
@@ -58,7 +79,7 @@ export default class Login extends Component {
                 // Save the input value to our variable code.
                 onChangeText={code => this.setState({code})}
                 leftIcon={
-                  <Icon 
+                  <Icon
                     type='font-awesome'
                     name='user-circle'
                     size={24}
@@ -86,10 +107,10 @@ export default class Login extends Component {
                 }
             />
           </View>
-      
+
             {/* Allows us to put a button side by side. */}
             <View style={{ flexDirection:"row" }}>
-              
+
               <TouchableOpacity onPress={btn_send}>
                 {/* Enviar button */}
                 <Image style={styles.btn_send} source={require("./Imagenes/btn_send.png")} />
@@ -99,7 +120,7 @@ export default class Login extends Component {
               <TouchableOpacity onPress={btn_code}>
                   {/* Registrarse button */}
                   <Image style={styles.btn_reg} source={require("./Imagenes/btn_register.png")} />
-      
+
                   {/* A fuerza ocupa haber un elemento, este es en blanco. */}
                   <Text></Text>
               </TouchableOpacity>
@@ -137,7 +158,7 @@ const styles = StyleSheet.create({
         width:150,
         height:40
     },
-    
+
     // This is only to get the correct margin for the inputs.
     input:{
       marginTop: 480,
