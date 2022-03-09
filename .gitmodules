@@ -1,0 +1,3 @@
+[submodule "backendCarreraCucei"]
+	path = backendCarreraCucei
+	url = https://github.com/EdPeReg/backendCarreraCucei.git
