@@ -79,7 +79,7 @@ export default class Registro extends Component {
         <View style={{marginTop:-40}}>
           <Input
             style={styles.input}
-            placeholder="Escuela"
+            placeholder="Centro"
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
@@ -89,7 +89,7 @@ export default class Registro extends Component {
         <View style={{marginTop:-40}}>
           <Input
             style={styles.input}
-            placeholder="Grado"
+            placeholder="Semestre"
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
