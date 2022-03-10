@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ImageBackground, StyleSheet, Dimensions, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ImageBackground, StyleSheet, Dimensions, Image, TouchableOpacity, Alert } from 'react-native';
 import { NavigationContext } from '@react-navigation/native';
 import { Input } from 'react-native-elements'
 
@@ -8,6 +8,14 @@ export default class Registro extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      // Variables used to save user information.
+      name : "",
+      code : "",
+      password : "",
+      phone : "",
+      email : "",
+      campus : "",
+      semester : "",
     };
   }
 
@@ -17,6 +25,51 @@ export default class Registro extends Component {
     const btnToLogin = () => {
       console.log("Registro window button regresar pressed");
       navigation.navigate("Login");
+    }
+    
+    // TODO: Check if you can avoid using this method and use the method above????
+    const btnEnviar = () => {
+      console.log("Registro window button enviar pressed");
+      
+      /**** xhttp request to validate user information. ****/
+      // https://www.w3schools.com/xml/xml_http.asp
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          console.log(xhttp.responseText);
+
+          // User is registered already.  
+          if(xhttp.responseText == "3")
+          {
+            Alert.alert("Error!!", "Usuario ya registrado, registre otro usuario", [
+              { text:"OK", onPress:() => console.log("Usuario ya registrado")}
+            ]);
+          }
+
+          // User was registered successfully, go to login.
+          if(xhttp.responseText == "1")
+          {
+            console.log("Usuario registrado exitosamente");
+            navigation.navigate("Login");
+          }
+
+          // Something else happened, probably from the query side.
+          if(xhttp.responseText == "0")
+          {
+            Alert.alert("Error!!", "Algo raro acaba de pasar... revisar el php", [
+              { text:"OK", onPress:() => console.log("Error del servidor")}
+            ]);
+          }
+        }
+    }
+
+    xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Registro.php?nombre="
+                       +this.state.name+"&codigo="+this.state.code+"&correo="
+                       +this.state.email+"&telefono="+this.state.phone+"&password="
+                       +this.state.password+"&centro="+this.state.campus+"&semestre="
+                       +this.state.semester, 
+                       true);
+    xhttp.send();
     }
     
     return (
@@ -33,6 +86,7 @@ export default class Registro extends Component {
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
+            onChangeText={name => this.setState({name})}
           />
         </View>
 
@@ -43,6 +97,7 @@ export default class Registro extends Component {
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
+            onChangeText={code => this.setState({code})}
           />
         </View>
 
@@ -53,6 +108,7 @@ export default class Registro extends Component {
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
+            onChangeText={password => this.setState({password})}
           />
         </View>
       
@@ -63,6 +119,7 @@ export default class Registro extends Component {
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
+            onChangeText={phone => this.setState({phone})}
           />
         </View>
       
@@ -73,6 +130,7 @@ export default class Registro extends Component {
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
+            onChangeText={email => this.setState({email})}
           />
         </View>
 
@@ -83,6 +141,7 @@ export default class Registro extends Component {
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
+            onChangeText={campus => this.setState({campus})}
           />
         </View>
 
@@ -93,14 +152,20 @@ export default class Registro extends Component {
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
+            onChangeText={semester => this.setState({semester})}
           />
         </View>
         {/********************************* */}
       
         {/* Allows us to put a button side by side. */}
         <View style={{ flexDirection:"row" }}>
-            {/* Enviar button */}
-            <Image style={styles.btn_send} source={require("./Imagenes/btn_send.png")} />
+            {/* Call the next function to give the corresponding behaviour. */}
+            <TouchableOpacity onPress={btnEnviar}>
+              {/* Enviar button */}
+              <Image style={styles.btn_send} source={require("./Imagenes/btn_send.png")} />
+
+              <Text></Text>  
+            </TouchableOpacity>
 
             {/* Posicionar correctamente en el boton, llamara una funcion que se llama login. */}
             <TouchableOpacity onPress={btnToLogin}>
@@ -142,7 +207,6 @@ const styles = StyleSheet.create({
     },
 
     btn_send: {
-        borderWidth:3,
         borderColor: "white",
         marginTop: 150,
         marginLeft: 50,
