@@ -38,6 +38,14 @@ export default class Registro extends Component {
         if (this.readyState == 4 && this.status == 200) {
           console.log(xhttp.responseText);
 
+          // A field is empty, show an error.
+          if(xhttp.responseText == "-1")
+          {
+            Alert.alert("Error!!", "Hay algun campo vacio, llene todos los campos", [
+              { text:"OK", onPress:() => console.log("Campo vacio")}
+            ])
+          }
+          
           // User is registered already.  
           if(xhttp.responseText == "3")
           {
@@ -132,6 +140,7 @@ export default class Registro extends Component {
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
+            keyboardType='email-address'
             onChangeText={email => this.setState({email})}
           />
         </View>

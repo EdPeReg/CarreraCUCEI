@@ -36,6 +36,13 @@ export default class Login extends Component {
         if (this.readyState == 4 && this.status == 200) {
           console.log(xhttp.responseText);
 
+          if(xhttp.responseText == "-1")
+          {
+            Alert.alert("Error!!", "Hay algun campo vacio, llene todos los campos", [
+              { text:"OK", onPress:() => console.log("Campo vacio")}
+            ])
+          }
+
           if(xhttp.responseText == "1")
           {
             // Usuario reconocido.
