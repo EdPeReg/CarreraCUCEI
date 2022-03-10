@@ -76,6 +76,7 @@ export default class Login extends Component {
                 placeholder='Codigo'
                 placeholderTextColor='white'
                 color="white"
+                keyboardType='numeric'
                 // Save the input value to our variable code.
                 onChangeText={code => this.setState({code})}
                 leftIcon={

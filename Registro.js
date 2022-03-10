@@ -97,6 +97,7 @@ export default class Registro extends Component {
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
+            keyboardType='numeric'
             onChangeText={code => this.setState({code})}
           />
         </View>
@@ -119,6 +120,7 @@ export default class Registro extends Component {
             placeholderTextColor="white"
             color="white"
             backgroundColor="#5C6161"
+            keyboardType='numeric'
             onChangeText={phone => this.setState({phone})}
           />
         </View>
