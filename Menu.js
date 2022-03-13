@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // Importaciones de ventanas.
 import LOGIN from "./Login";
 import REGISTRO from "./Registro";
+import CONTEO from "./Conteo";
 
 export default class Menu extends Component {
   constructor(props) {
@@ -24,6 +25,7 @@ export default class Menu extends Component {
               {/* Habra tantos stack como ventanas importemos. El orden tiene que ver. */}
               <Stack.Screen name="Login" component={LOGIN} />
               <Stack.Screen name="Registro" component={REGISTRO} />
+              <Stack.Screen name="Conteo" component={CONTEO} />
           </Stack.Navigator>
         </NavigationContainer>
     );
