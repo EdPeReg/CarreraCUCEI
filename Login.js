@@ -29,6 +29,7 @@ export default class Login extends Component {
     /* Validate codigo and password input fields. */
     const btn_send = () => {
       console.log("Button enviar pressed");
+      
       // Pegar aqui lo de xml, enviar informacion y recibir del servidor.
       // https://www.w3schools.com/xml/xml_http.asp
       var xhttp = new XMLHttpRequest();
@@ -47,6 +48,8 @@ export default class Login extends Component {
           {
             // Usuario reconocido.
             console.log("Usuario certificado");
+            // Move to Conteo window.
+            navigation.navigate("Conteo");
           }
 
           if(xhttp.responseText == "2")
