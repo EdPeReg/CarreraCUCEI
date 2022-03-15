@@ -16,60 +16,92 @@ export default class Registro extends Component {
       email : "",
       campus : "",
       semester : "",
+      regexCode : /^[0-9]{9}$/,         // Match only numbers with only 9 numbers.
+      regexPhone : /^[0-9]{10}$/,       // Match only numbers with only 10 numbers.
+      regexLetters : /^[A-Za-z\s]+$/,   // Match only letters with white spaces.
+      regexEmail : /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
     };
   }
 
   render() {
     const navigation = this.context;
     
+    /* Will validate if the fields have the corresponding letters or if are empty. */
+    validateFields = () => {
+      if((!this.state.regexLetters.test(this.state.name)) ||
+         (!this.state.regexCode.test(this.state.code))    || 
+         (!this.state.regexPhone.test(this.state.phone))  ||
+         (!this.state.regexEmail.test(this.state.email))  ||
+         (!this.state.regexLetters.test(this.state.campus)) ||
+         (!this.state.regexLetters.test(this.state.semester))) 
+      {
+        Alert.alert("Error!!", "Hay algun campo invalido, vuelva a revisar", [
+          { text:"OK", onPress:() => console.log("Campo invalido")}
+        ])
+        
+        return false;
+      } 
+      return true;
+    }
+    
     const btnToLogin = () => {
       console.log("Registro window button regresar pressed");
       navigation.navigate("Login");
     }
-    
-    // TODO: Check if you can avoid using this method and use the method above????
+
     const btnEnviar = () => {
       console.log("Registro window button enviar pressed");
       
       /**** xhttp request to validate user information. ****/
       // https://www.w3schools.com/xml/xml_http.asp
       var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          console.log(xhttp.responseText);
 
-          // A field is empty, show an error.
-          if(xhttp.responseText == "-1")
-          {
-            Alert.alert("Error!!", "Hay algun campo vacio, llene todos los campos", [
-              { text:"OK", onPress:() => console.log("Campo vacio")}
-            ])
-          }
-          
-          // User is registered already.  
-          if(xhttp.responseText == "3")
-          {
-            Alert.alert("Error!!", "Usuario ya registrado, registre otro usuario", [
-              { text:"OK", onPress:() => console.log("Usuario ya registrado")}
-            ]);
-          }
+      if(validateFields()) 
+      {
+        xhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            console.log(xhttp.responseText);
 
-          // User was registered successfully, go to login.
-          if(xhttp.responseText == "1")
-          {
-            console.log("Usuario registrado exitosamente");
-            navigation.navigate("Login");
-          }
+            // A field is empty, show an error.
+            if (xhttp.responseText == '-1') {
+              Alert.alert(
+                'Error!!',
+                'Hay algun campo vacio, llene todos los campos',
+                [{text: 'OK', onPress: () => console.log('Campo vacio')}],
+              );
+            }
 
-          // Something else happened, probably from the query side.
-          if(xhttp.responseText == "0")
-          {
-            Alert.alert("Error!!", "Algo raro acaba de pasar... revisar el php", [
-              { text:"OK", onPress:() => console.log("Error del servidor")}
-            ]);
+            // User is registered already.
+            if (xhttp.responseText == '3') {
+              Alert.alert(
+                'Error!!',
+                'Usuario ya registrado, registre otro usuario',
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => console.log('Usuario ya registrado'),
+                  },
+                ],
+              );
+            }
+
+            // User was registered successfully, go to login.
+            if (xhttp.responseText == '1') {
+              console.log('Usuario registrado exitosamente');
+              navigation.navigate('Login');
+            }
+
+            // Something else happened, probably from the query side.
+            if (xhttp.responseText == '0') {
+              Alert.alert(
+                'Error!!',
+                'Algo raro acaba de pasar... revisar el php',
+                [{text: 'OK', onPress: () => console.log('Error del servidor')}],
+              );
+            }
           }
-        }
-    }
+        };
+      } 
 
     xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Registro.php?nombre="
                        +this.state.name+"&codigo="+this.state.code+"&correo="
