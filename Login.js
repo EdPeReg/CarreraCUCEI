@@ -13,68 +13,84 @@ export default class Login extends Component {
       // Variables to use to save the Input information.
       code:"",
       password:"",
+      regexCode : /^[0-9]{9}$/, // Match only numbers with only 9 numbers.
     };
   }
 
     render() {
       const navigation = this.context;
 
+      /* Will validate if the fields have the corresponding letters or if are empty. */
+      const validateFields = () => {
+        if(!this.state.regexCode.test(this.state.code))
+        {
+          Alert.alert("Error!!", "Hay algun campo invalido, vuelva a revisar", [
+            { text:"OK", onPress:() => console.log("Campo invalido")}
+          ])
+          
+          return false;
+        } 
+        return true;
+      }
+      
       /* Allows us to change to Registro window. */
       const btn_code = () => {
           console.log("Button registrar pressed");
           // Allows us to move to our Registro window.
           navigation.navigate("Registro");
-    }
+      }
 
-    /* Validate codigo and password input fields. */
-    const btn_send = () => {
-      console.log("Button enviar pressed");
-      
-      // Pegar aqui lo de xml, enviar informacion y recibir del servidor.
-      // https://www.w3schools.com/xml/xml_http.asp
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          console.log(xhttp.responseText);
+      /* Validate codigo and password input fields. */
+      const btn_send = () => {
+        console.log("Button enviar pressed");
+        
+        // https://www.w3schools.com/xml/xml_http.asp
+        var xhttp = new XMLHttpRequest();
+        
+        if(validateFields)
+        {
+          xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              console.log(xhttp.responseText);
 
-          if(xhttp.responseText == "-1")
-          {
-            Alert.alert("Error!!", "Hay algun campo vacio, llene todos los campos", [
-              { text:"OK", onPress:() => console.log("Campo vacio")}
-            ])
-          }
+              if(xhttp.responseText == "-1")
+              {
+                Alert.alert("Error!!", "Hay algun campo vacio, llene todos los campos", [
+                  { text:"OK", onPress:() => console.log("Campo vacio")}
+                ])
+              }
 
-          if(xhttp.responseText == "1")
-          {
-            // Usuario reconocido.
-            console.log("Usuario certificado");
-            // Move to Conteo window.
-            navigation.navigate("Conteo");
-          }
+              if(xhttp.responseText == "1")
+              {
+                // Usuario reconocido.
+                console.log("Usuario certificado");
+                // Move to Conteo window.
+                navigation.navigate("Conteo");
+              }
 
-          if(xhttp.responseText == "2")
-          {
-            Alert.alert("Error!!", "Password erroneo intente de nuevo", [
-              { text:"OK", onPress:() => console.log("pass error")}
-            ]);
-          }
+              if(xhttp.responseText == "2")
+              {
+                Alert.alert("Error!!", "Password erroneo intente de nuevo", [
+                  { text:"OK", onPress:() => console.log("pass error")}
+                ]);
+              }
 
-          if(xhttp.responseText == "0")
-          {
-            Alert.alert("Error!!", "Usuario no reconocido", [
-              { text:"OK", onPress:() => console.log("user error")}
-            ]);
+              if(xhttp.responseText == "0")
+              {
+                Alert.alert("Error!!", "Usuario no reconocido", [
+                  { text:"OK", onPress:() => console.log("user error")}
+                ]);
+              }
+            }
           }
         }
 
-    }
-
-    // GET is the server method, communication channel.
-    // The second parameter should be our URL from webhost page, this URL needs to have the correct format
-    // and needs to use the correct variables.
-    // state is to show values, setState is to assign values.
-    xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Login.php?codigo="+this.state.code+"&password="+this.state.password, true);
-    xhttp.send();
+      // GET is the server method, communication channel.
+      // The second parameter should be our URL from webhost page, this URL needs to have the correct format
+      // and needs to use the correct variables.
+      // state is to show values, setState is to assign values.
+      xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Login.php?codigo="+this.state.code+"&password="+this.state.password, true);
+      xhttp.send();
   }
 
     return (
