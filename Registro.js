@@ -101,15 +101,15 @@ export default class Registro extends Component {
             }
           }
         };
+        
+        xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Registro.php?nombre="
+                           +this.state.name+"&codigo="+this.state.code+"&correo="
+                           +this.state.email+"&telefono="+this.state.phone+"&password="
+                           +this.state.password+"&centro="+this.state.campus+"&semestre="
+                           +this.state.semester, 
+                           true);
+        xhttp.send();
       } 
-
-    xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Registro.php?nombre="
-                       +this.state.name+"&codigo="+this.state.code+"&correo="
-                       +this.state.email+"&telefono="+this.state.phone+"&password="
-                       +this.state.password+"&centro="+this.state.campus+"&semestre="
-                       +this.state.semester, 
-                       true);
-    xhttp.send();
     }
     
     return (
