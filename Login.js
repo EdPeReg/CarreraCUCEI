@@ -65,7 +65,7 @@ export default class Login extends Component {
                 // Usuario reconocido.
                 console.log("Usuario certificado");
                 // Move to Conteo window.
-                navigation.navigate("Conteo");
+                navigation.navigate("Datos");
               }
 
               if(xhttp.responseText == "2")
