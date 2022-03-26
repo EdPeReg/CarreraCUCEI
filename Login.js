@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { View, Text, ImageBackground, StyleSheet, Dimensions, TouchableOpacity, Image, Alert } from 'react-native';
 import { NavigationContext } from '@react-navigation/native';
 import { Input, Icon } from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class Login extends Component {
   static contextType = NavigationContext;
@@ -19,6 +20,8 @@ export default class Login extends Component {
 
     render() {
       const navigation = this.context;
+      // This variable represent this Login, by doing this, allows us to use setState.
+      var _this = this;
 
       /* Will validate if the fields have the corresponding letters or if are empty. */
       const validateFields = () => {
@@ -34,7 +37,7 @@ export default class Login extends Component {
       }
       
       /* Allows us to change to Registro window. */
-      const btn_code = () => {
+      const btn_register = () => {
           console.log("Button registrar pressed");
           // Allows us to move to our Registro window.
           navigation.navigate("Registro");
@@ -60,11 +63,14 @@ export default class Login extends Component {
                 ])
               }
 
+              // Usuario reconocido.
               if(xhttp.responseText == "1")
               {
-                // Usuario reconocido.
                 console.log("Usuario certificado");
-                // Move to Conteo window.
+                // It will create a file 'codeStorage' that will contain our code.
+                AsyncStorage.setItem('codeStorage', JSON.stringify([_this.state.code]));
+
+                // Move to Datos window.
                 navigation.navigate("Datos");
               }
 
@@ -144,7 +150,7 @@ export default class Login extends Component {
               </TouchableOpacity>
 
               {/* Posicionar correctamente en el boton, llamara una funcion que se llama login. */}
-              <TouchableOpacity onPress={btn_code}>
+              <TouchableOpacity onPress={btn_register}>
                   {/* Registrarse button */}
                   <Image style={styles.btn_reg} source={require("./Imagenes/btn_register.png")} />
 

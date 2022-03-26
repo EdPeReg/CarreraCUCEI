@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Dimensions, ImageBackground, Text, TouchableOpacity, Image } from 'react-native';
 import { Avatar, Button } from 'react-native-elements';
 import MenuDrawer from 'react-native-side-drawer'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // TODO: Change to a proper background image and use the hack.
 
@@ -10,25 +11,49 @@ export default class Datos extends Component {
         super(props);
         this.state = {
             runners : "",
+            code : "",
+            name : "",
+            campus : "",
             open: false
         };
     }
     
-    componentDidMount() {
+    /* Will get the data stored in our json using AsyncStorage. */
+    getData = async() => {
+        // Get the information stored in our codeStorage (user code).
+        const jsonValue = await AsyncStorage.getItem('codeStorage');
+
+        // Parse our json, getting an array, our first position is our code because it has only one element.
+        this.setState({code : JSON.parse(jsonValue)[0]});
+        console.log("Se obtuvo el codigo del json " + this.state.code);
+        
         // https://www.w3schools.com/xml/xml_http.asp
         var xhttp = new XMLHttpRequest();
 
-        // This variable represent this Conteo, by doing this, allows us to use setState.
+        // This variable represent this Datos, by doing this, allows us to use setState.
         var _this = this;
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-              // Using this Conteo setState.
-              _this.setState({runners : xhttp.responseText});
+              console.log("Informacion completa del servidor: " + xhttp.responseText);
+              var serverData = xhttp.responseText;
+              
+              // [0] = nombre
+              // [1] = codigo
+              // [2] = campus
+              // [3] = runners
+              // Store the data.
+              var data = serverData.split(',');
+              _this.setState({name : data[0]});
+              _this.setState({campus: data[2]});
+              _this.setState({runners : data[3]});
           }
         }
-
-        xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Count.php", true);
+        xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Count.php?codigo="+this.state.code, true);
         xhttp.send();
+    }
+
+    componentDidMount() {
+        this.getData();
     }
     
     /* Will toggle between the drawerContent and the render function, allows us to close it. */
@@ -49,9 +74,9 @@ export default class Datos extends Component {
                 </View>
 
                 <View>
-                    <Text> Nombre del corredor </Text>
-                    <Text> Codigo </Text>
-                    <Text> Centro universitario </Text>
+                    <Text> Nombre del corredor: {this.state.name} </Text>
+                    <Text> Codigo: {this.state.code} </Text>
+                    <Text> Centro universitario: {this.state.campus} </Text>
                 </View>
 
                 <View style={{marginTop: 10}}>
@@ -68,7 +93,7 @@ export default class Datos extends Component {
                   open={this.state.open}
                   position={'left'}
                   drawerContent={this.drawerContent()}
-                  drawerPercentage={45}
+                  drawerPercentage={60}
                   animationTime={250}
                   overlay={true}
                   opacity={0.4}
