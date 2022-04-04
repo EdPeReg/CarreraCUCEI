@@ -68,7 +68,7 @@ export default class Login extends Component {
               {
                 console.log("Usuario certificado");
                 // It will create a file 'codeStorage' that will contain our code.
-                AsyncStorage.setItem('codeStorage', JSON.stringify([_this.state.code]));
+                AsyncStorage.setItem('data', JSON.stringify([_this.state.code]));
 
                 // Move to Datos window.
                 navigation.navigate("Datos");

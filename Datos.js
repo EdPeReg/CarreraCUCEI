@@ -14,6 +14,7 @@ export default class Datos extends Component {
             code : "",
             name : "",
             campus : "",
+            photo : "",
             open: false
         };
     }
@@ -21,7 +22,7 @@ export default class Datos extends Component {
     /* Will get the data stored in our json using AsyncStorage. */
     getData = async() => {
         // Get the information stored in our codeStorage (user code).
-        const jsonValue = await AsyncStorage.getItem('codeStorage');
+        const jsonValue = await AsyncStorage.getItem('data');
 
         // Parse our json, getting an array, our first position is our code because it has only one element.
         this.setState({code : JSON.parse(jsonValue)[0]});
@@ -41,11 +42,16 @@ export default class Datos extends Component {
               // [1] = codigo
               // [2] = campus
               // [3] = runners
+              // [4] = photo
               // Store the data.
               var data = serverData.split(',');
               _this.setState({name : data[0]});
-              _this.setState({campus: data[2]});
+              _this.setState({campus : data[2]});
               _this.setState({runners : data[3]});
+              _this.setState({photo: data[4]});
+              
+              // Save the most updated information
+              AsyncStorage.setItem('data', JSON.stringify([data[0], data[1], data[2], data[3], data[4]]));
           }
         }
         xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Count.php?codigo="+this.state.code, true);
@@ -69,7 +75,7 @@ export default class Datos extends Component {
                     <Avatar 
                         size={64}
                         rounded
-                        source={require("./Imagenes/avatar_default.png")}
+                        source={{uri: this.state.photo}}
                     />
                 </View>
 
