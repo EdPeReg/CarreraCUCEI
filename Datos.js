@@ -75,7 +75,8 @@ export default class Datos extends Component {
                     <Avatar 
                         size={64}
                         rounded
-                        source={{uri: this.state.photo}}
+                        // To avoid a warning about uri is empty string.
+                        source={{uri: this.state.photo ? this.state.photo : null}}
                     />
                 </View>
 
