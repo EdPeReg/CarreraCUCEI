@@ -4,55 +4,100 @@ import { Avatar, Button } from 'react-native-elements';
 import MenuDrawer from 'react-native-side-drawer'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// TODO: Change to a proper background image and use the hack.
+// TODO: Check if we can have and use runner object inside this.state
 
 export default class Datos extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            runners : "",
+            total_runners : "",
             code : "",
             name : "",
             campus : "",
             photo : "",
-            open: false
+            open: false,
+            ranking_table : [], // Will be an array ob runners.
         };
     }
-    
+
     /* Will get the data stored in our json using AsyncStorage. */
     getData = async() => {
-        // Get the information stored in our codeStorage (user code).
+        // Get the information stored in our data (data information).
         const jsonValue = await AsyncStorage.getItem('data');
 
         // Parse our json, getting an array, our first position is our code because it has only one element.
         this.setState({code : JSON.parse(jsonValue)[0]});
         console.log("Se obtuvo el codigo del json " + this.state.code);
-        
+
         // https://www.w3schools.com/xml/xml_http.asp
         var xhttp = new XMLHttpRequest();
 
         // This variable represent this Datos, by doing this, allows us to use setState.
         var _this = this;
         xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-              console.log("Informacion completa del servidor: " + xhttp.responseText);
-              var serverData = xhttp.responseText;
-              
-              // [0] = nombre
-              // [1] = codigo
-              // [2] = campus
-              // [3] = runners
-              // [4] = photo
-              // Store the data.
-              var data = serverData.split(',');
-              _this.setState({name : data[0]});
-              _this.setState({campus : data[2]});
-              _this.setState({runners : data[3]});
-              _this.setState({photo: data[4]});
-              
-              // Save the most updated information
-              AsyncStorage.setItem('data', JSON.stringify([data[0], data[1], data[2], data[3], data[4]]));
-          }
+            if (this.readyState == 4 && this.status == 200) {
+                console.log("Informacion completa del servidor: " + xhttp.responseText);
+
+                let serverData = xhttp.responseText;
+                const MAX_USER_INFO = 5;    // At this position start our ranking table information.
+
+                // [0] = nombre
+                // [1] = codigo
+                // [2] = campus
+                // [3] = total_runners
+                // [4] = photo
+                // Store the data, we don't store our code because we have it already.
+                let data = serverData.split(',');
+                _this.setState({name : data[0]});
+                _this.setState({campus : data[2]});
+                _this.setState({total_runners : data[3]});
+                _this.setState({photo: data[4]});
+
+                // Save runner information in our rank table.
+                let pos = 1;
+                for(let i = MAX_USER_INFO; i < data.length - 1;)
+                {
+                    // Probably it would be a good idea to have this in the state variables? 
+                    let runner = {
+                        position: 0,
+                        code: "",
+                        distance: 0,
+                        time: 0,
+                        points: 0.
+                    }
+
+                    // Assign the corresponding values to our runner.
+                    runner['position'] = pos++;
+                    runner['code'] = data[i++];
+                    runner['distance'] = data[i++];
+                    runner['time'] = data[i++];
+                    runner['points'] = parseInt(data[i++]);
+                    _this.state.ranking_table.push(runner);
+                }
+                
+                // Give ranking table information and save every item in our ranking table
+                const ranking_table_formatted = _this.state.ranking_table.map((item) =>
+                    <View>
+                        <Text style={{color: "black"}}>
+                            Posicion { item['position'] } : { item['code'] } | Distancia: { item['distance'] } |
+                            Tiempo: { item['time'] } | Puntaje: {item['points']}
+                        </Text>
+                    </View>
+                );
+                
+                // I'm pretty sure there is a javascript way to do this, just some log information.
+                for(let i = 0; i < _this.state.ranking_table.length; ++i) {
+                    console.log("Lugar " + _this.state.ranking_table[i].position + ":" + _this.state.ranking_table[i].code + " | " + 
+                                "Distancia:" + _this.state.ranking_table[i].distance + " | " + 
+                                "Tiempo: " + _this.state.ranking_table[i].time + " | " + 
+                                "Puntaje: " + _this.state.ranking_table[i].points);
+                }
+
+                _this.setState({ranking_table : ranking_table_formatted});
+                
+                // Save the most updated information
+                // AsyncStorage.setItem('data', JSON.stringify([data[0], data[1], data[2], data[3], data[4]]));
+            }
         }
         xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Count.php?codigo="+this.state.code, true);
         xhttp.send();
@@ -61,7 +106,7 @@ export default class Datos extends Component {
     componentDidMount() {
         this.getData();
     }
-    
+
     /* Will toggle between the drawerContent and the render function, allows us to close it. */
     toggleOpen = () => {
         this.setState({ open: !this.state.open });
@@ -72,7 +117,7 @@ export default class Datos extends Component {
         return (
             <View style={styles.animatedBox}>
                 <View style={styles.imgAvatar}>
-                    <Avatar 
+                    <Avatar
                         size={64}
                         rounded
                         // To avoid a warning about uri is empty string.
@@ -97,29 +142,32 @@ export default class Datos extends Component {
         return (
             <View style={styles.container}>
                 <MenuDrawer
-                  open={this.state.open}
-                  position={'left'}
-                  drawerContent={this.drawerContent()}
-                  drawerPercentage={60}
-                  animationTime={250}
-                  overlay={true}
-                  opacity={0.4}
+                    open={this.state.open}
+                    position={'left'}
+                    drawerContent={this.drawerContent()}
+                    drawerPercentage={60}
+                    animationTime={250}
+                    overlay={true}
+                    opacity={0.4}
                 >
-                <ImageBackground style={styles.bg} source={require("./Imagenes/background_simple.png")}>
-            
-                    {/* Will wrap the hamburger icon and text */}
-                    <View style={{flexDirection: "row"}}>
-                        <TouchableOpacity onPress={this.toggleOpen} style={styles.body}>
-                            <Image style={styles.imgHamburger} source={require("./Imagenes/Hamburger_icon.png")} />
-                        </TouchableOpacity>
+                    <ImageBackground style={styles.bg} source={require("./Imagenes/bg_data_window.jpg")}>
 
-                        <Text style={styles.TextoP}> El numero total de corredores son {this.state.runners} </Text>
-                    </View>
+                        {/* Will wrap the hamburger icon */}
+                        <View style={{marginBottom: 40}}>
+                            <TouchableOpacity onPress={this.toggleOpen} style={styles.body}>
+                                <Image style={styles.imgHamburger} source={require("./Imagenes/Hamburger_icon.png")} />
+                            </TouchableOpacity>
+                        </View>
 
-                </ImageBackground>
+                        {/* Body information showing total number of runners and ranking. */}
+                        <View>
+                            <Text style={styles.TextoP}> Corredores totales: {this.state.total_runners} </Text>
+                            <Text style={styles.TextoP}> Ranking de Corredores </Text>
+                            <Text style={styles.TextoP}> {this.state.ranking_table} </Text>
+                        </View>
+                    </ImageBackground>
                 </MenuDrawer>
             </View>
-
         );
     }
 }
@@ -133,25 +181,23 @@ const styles = StyleSheet.create({
         width: Dimensions.get("screen").width,
         height: Dimensions.get("screen").height
     },
-    
+
     TextoP: {
         fontSize: 30,
         color: "black",
-        textAlign: "left",
-        marginLeft: -30,
+        textAlign: "center",
     },
-    
+
     imgAvatar: {
         marginBottom: 3,
         alignItems: "center"
     },
-    
+
     imgHamburger: {
         width: 40,
         height: 60,
-        marginLeft: -30
     },
-    
+
     container: {
         flex: 1,
         backgroundColor: "#fff",
@@ -160,13 +206,13 @@ const styles = StyleSheet.create({
         marginTop: 30,
         zIndex: 0
     },
-    
+
     animatedBox: {
         flex: 1,
         backgroundColor: "#38C8EC",
         padding: 10
     },
-    
+
     body: {
         width: 100,
         height: 20,

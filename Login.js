@@ -30,12 +30,12 @@ export default class Login extends Component {
           Alert.alert("Error!!", "Hay algun campo invalido, vuelva a revisar", [
             { text:"OK", onPress:() => console.log("Campo invalido")}
           ])
-          
+
           return false;
-        } 
+        }
         return true;
       }
-      
+
       /* Allows us to change to Registro window. */
       const btn_register = () => {
           console.log("Button registrar pressed");
@@ -46,10 +46,10 @@ export default class Login extends Component {
       /* Validate codigo and password input fields. */
       const btn_send = () => {
         console.log("Button enviar pressed");
-        
+
         // https://www.w3schools.com/xml/xml_http.asp
         var xhttp = new XMLHttpRequest();
-        
+
         if(validateFields)
         {
           xhttp.onreadystatechange = function() {
@@ -69,6 +69,7 @@ export default class Login extends Component {
                 console.log("Usuario certificado");
                 // It will create a file 'codeStorage' that will contain our code.
                 AsyncStorage.setItem('data', JSON.stringify([_this.state.code]));
+                console.log("desde login " + _this.state.code);
 
                 // Move to Datos window.
                 navigation.navigate("Datos");
