@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, ImageBackground, Text, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Dimensions, ImageBackground, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Avatar, Button } from 'react-native-elements';
 import MenuDrawer from 'react-native-side-drawer'
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -77,12 +77,10 @@ export default class Datos extends Component {
                 
                 // Give ranking table information and save every item in our ranking table
                 const ranking_table_formatted = _this.state.ranking_table.map((item) =>
-                    <View>
-                        <Text style={{color: "black"}}>
-                            Posicion { item['position'] } : { item['code'] } | Distancia: { item['distance'] } |
-                            Tiempo: { item['time'] } | Puntaje: {item['points']}
-                        </Text>
-                    </View>
+                    <Text>
+                        Posicion { item['position'] } : { item['code'] } | Distancia: { item['distance'] } |
+                        Tiempo: { item['time'] } | Puntaje: {item['points']} |
+                    </Text>
                 );
                 
                 // I'm pretty sure there is a javascript way to do this, just some log information to debug.
@@ -168,8 +166,11 @@ export default class Datos extends Component {
                         <View>
                             <Text style={styles.TextoP}> Corredores totales: {this.state.total_runners} </Text>
                             <Text style={styles.TextoP}> Ranking de Corredores </Text>
-                            <Text style={styles.TextoP}> {this.state.ranking_table} </Text>
                         </View>
+            
+                        <ScrollView>
+                            <Text style={styles.textoRanking}> {this.state.ranking_table} </Text>
+                        </ScrollView>
                     </ImageBackground>
                 </MenuDrawer>
             </View>
@@ -191,6 +192,13 @@ const styles = StyleSheet.create({
         fontSize: 30,
         color: "black",
         textAlign: "center",
+    },
+    
+    textoRanking: {
+        color: "black",
+        fontSize: 12,
+        marginLeft: 15,
+        marginTop: 15,
     },
 
     imgAvatar: {
