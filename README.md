@@ -8,6 +8,7 @@ We use **React Navigation**, the next dependencies are needed (run this commands
 `npm install @react-navigation/native-stack` <br>
 `npm i react-native-side-drawer` <br>
 `npm install @react-native-async-storage/async-storage` <br>
+`npm install react-native-table-component` <br>
 
 For more information visit: https://reactnavigation.org/docs/hello-react-navigation
 

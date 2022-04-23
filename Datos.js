@@ -1,22 +1,32 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, ImageBackground, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { Avatar, Button } from 'react-native-elements';
+import { View, StyleSheet, Dimensions, ImageBackground, Text, TouchableOpacity, Image, ScrollView, Button } from 'react-native';
+import { Avatar } from 'react-native-elements';
+import { NavigationContext } from '@react-navigation/native';
 import MenuDrawer from 'react-native-side-drawer'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // TODO: Check if we can have and use runner object inside this.state
+// TODO: Try to avoid using margin with magic numbers, figure out how to set the margin based in cellphone resolution.
+// TODO: Probably is a good idea to have a table to show the ranking
+// TODO: Function getData() is too big... refactorize.
 
 export default class Datos extends Component {
+    static contextType = NavigationContext;
+    
     constructor(props) {
         super(props);
         this.state = {
             total_runners : "",
+            position : 0,
+            distance : 0,
+            time : 0,
+            points : 0,
             code : "",
             name : "",
             campus : "",
             photo : "",
             open: false,
-            ranking_table : [], // Will be an array ob runners.
+            ranking_table : [], // Will be an array o runners.
         };
     }
 
@@ -39,7 +49,7 @@ export default class Datos extends Component {
                 console.log("Informacion completa del servidor: " + xhttp.responseText);
 
                 let serverData = xhttp.responseText;
-                const MAX_USER_INFO = 5;    // At this position start our ranking table information.
+                const MAX_USER_INFO = 5;    // At this index start our ranking table information.
 
                 // [0] = nombre
                 // [1] = codigo
@@ -74,12 +84,35 @@ export default class Datos extends Component {
                     runner['points'] = parseInt(data[i++]);
                     _this.state.ranking_table.push(runner);
                 }
+
+                // Save the remaining information from our current runner logged.
+                _this.state.ranking_table.find((element) => 
+                {
+                    if(element.code === _this.state.code) 
+                    {
+                        _this.setState({position : element.position});
+                        _this.setState({distance : element.distance});
+                        _this.setState({time : element.time});
+                        _this.setState({points : element.points});
+                    }
+                });
+
+                // Save the remaining data from our current runner logged.
+                if(_this.state.ranking_table['code'] == _this.state.code) 
+                {
+                    _this.setState({ position : runner['position']});
+                    _this.setState({ distance : runner['distance']});
+                    _this.setState({ time : runner['time']});
+                    _this.setState({ points : runner['points']});
+                }
                 
-                // Give ranking table information and save every item in our ranking table
+                // Give ranking table information and save every item in our ranking table,
+                // this will be used to show in the cellphone.
                 const ranking_table_formatted = _this.state.ranking_table.map((item) =>
-                    <Text>
-                        Posicion { item['position'] } : { item['code'] } | Distancia: { item['distance'] } |
-                        Tiempo: { item['time'] } | Puntaje: {item['points']} |
+                    <Text style={{ fontWeight : "bold" }}>
+                        Posicion { item['position'] } : { item['code'] } | Distancia: { item['distance'] } | 
+                        Tiempo: { item['time'] } {"\n"} Puntaje: {item['points']} {"\n"}
+                        -------------------- {"\n"}
                     </Text>
                 );
                 
@@ -91,6 +124,7 @@ export default class Datos extends Component {
                                 "Puntaje: " + _this.state.ranking_table[i].points);
                 }
 
+                // At this point our ranking table has a valid format.
                 _this.setState({ranking_table : ranking_table_formatted});
                 
                 // Save the most updated information
@@ -110,7 +144,7 @@ export default class Datos extends Component {
         this.setState({ open: !this.state.open });
       };
 
-    /* Will draw the content returning how it will looks like. */
+    /* Will draw the content returning how it will looks like; this represents our hamburger menu. */
     drawerContent = () => {
         return (
             <View style={styles.animatedBox}>
@@ -137,6 +171,8 @@ export default class Datos extends Component {
     };
 
     render() {
+        const navigation = this.context;
+
         return (
             <View style={styles.container}>
                 <MenuDrawer
@@ -165,12 +201,26 @@ export default class Datos extends Component {
                         {/* Body information showing total number of runners and ranking. */}
                         <View>
                             <Text style={styles.TextoP}> Corredores totales: {this.state.total_runners} </Text>
-                            <Text style={styles.TextoP}> Ranking de Corredores </Text>
+                            <Text style={styles.TextoP}> Ranking de Corredores: </Text>
                         </View>
             
-                        <ScrollView>
-                            <Text style={styles.textoRanking}> {this.state.ranking_table} </Text>
-                        </ScrollView>
+                        {/* Scroll box using flex to scroll. */}
+                        <View style={{flex : 1}}>
+                            <ScrollView>
+                                <Text style={styles.textoRanking}> {this.state.ranking_table} </Text>
+                            </ScrollView>
+                        </View>
+            
+                        {/* Current runner logged info */}
+                        <View>
+                            <Text style={styles.TextoP}> Datos del Corredor: {this.state.name} </Text>
+                            <Text style={styles.TextoP}> Posicion: {this.state.position} | Distancia: {this.state.distance} Tiempo: {this.state.time} | Puntos: {this.state.points} </Text> 
+                        </View>
+
+                        {/* Button to go to login window */}
+                        <View style={styles.btn}>
+                            <Button title="Cerrar Sesión" color="#3d71d9" onPress={() => navigation.navigate('Login')}> </Button>
+                        </View>
                     </ImageBackground>
                 </MenuDrawer>
             </View>
@@ -183,6 +233,7 @@ const win = Dimensions.get('window');
 const ratio = win.width / 1080;
 
 const styles = StyleSheet.create({
+    // Background image, will fit the image properly depending of the cellphone resolution.
     bg : {
         width: Dimensions.get("screen").width,
         height: Dimensions.get("screen").height
@@ -196,8 +247,8 @@ const styles = StyleSheet.create({
     
     textoRanking: {
         color: "black",
-        fontSize: 12,
-        marginLeft: 15,
+        textAlign: "center",
+        fontSize: 15,
         marginTop: 15,
     },
 
@@ -211,13 +262,9 @@ const styles = StyleSheet.create({
         height: 60,
     },
 
+    // Main container, this flex allows us to scroll.
     container: {
         flex: 1,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 30,
-        zIndex: 0
     },
 
     animatedBox: {
@@ -235,6 +282,15 @@ const styles = StyleSheet.create({
     logo:{
         width: 140,
         height: 160,
+        marginTop: -50,
         marginLeft: 140        
     },
+    
+    btn: {
+        flex: 1,                 // Allows us to show the button.
+        width: 200,
+        marginLeft: 107,
+        marginTop: -100,         // Accomodate data runner and table ranking, space between them is deleted.
+        justifyContent: "center" // Center the button.
+    }
 })
