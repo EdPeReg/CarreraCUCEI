@@ -85,7 +85,7 @@ export default class Datos extends Component {
                     </View>
                 );
                 
-                // I'm pretty sure there is a javascript way to do this, just some log information.
+                // I'm pretty sure there is a javascript way to do this, just some log information to debug.
                 for(let i = 0; i < _this.state.ranking_table.length; ++i) {
                     console.log("Lugar " + _this.state.ranking_table[i].position + ":" + _this.state.ranking_table[i].code + " | " + 
                                 "Distancia:" + _this.state.ranking_table[i].distance + " | " + 
@@ -159,6 +159,11 @@ export default class Datos extends Component {
                             </TouchableOpacity>
                         </View>
 
+                        {/* Logo for udg pet */}
+                        <View>
+                            <Image style={styles.logo} source={require("./Imagenes/mascota_udg_logo.png")} />
+                        </View>
+            
                         {/* Body information showing total number of runners and ranking. */}
                         <View>
                             <Text style={styles.TextoP}> Corredores totales: {this.state.total_runners} </Text>
@@ -217,5 +222,11 @@ const styles = StyleSheet.create({
         width: 100,
         height: 20,
         alignItems: 'center',
-    }
+    },
+    
+    logo:{
+        width: 140,
+        height: 160,
+        marginLeft: 140        
+    },
 })
