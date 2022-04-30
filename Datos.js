@@ -16,18 +16,28 @@ export default class Datos extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            total_runners : "",
+            totalRunners : "",
             position : 0,
             distance : 0,
             time : 0,
-            points : 0,
             code : "",
             name : "",
             campus : "",
             photo : "",
             open: false,
-            ranking_table : [], // Will be an array o runners.
+            inRanking: true,
+            rankingTable : [], // Will be an array of runners.
+            topThree : [],      // First three runners.
         };
+    }
+
+    /* Will print in the cellphone basic runner information.*/
+    getRunnerInfo = (inRanking) => {
+        if(!inRanking) {
+            console.log(inRanking);
+            return <Text style={styles.TextoP}> Datos del corredor: {this.state.name} {"\n"} Posicion: {this.state.position} | Distancia: {this.state.distance}m | Tiempo: {this.state.time} </Text> ;
+        }
+        return null;
     }
 
     /* Will get the data stored in our json using AsyncStorage. */
@@ -49,31 +59,30 @@ export default class Datos extends Component {
                 console.log("Informacion completa del servidor: " + xhttp.responseText);
 
                 let serverData = xhttp.responseText;
-                const MAX_USER_INFO = 5;    // At this index start our ranking table information.
+                const INDEX_START_RANKING = 5;    // At this index start our ranking table information.
 
                 // [0] = nombre
                 // [1] = codigo
                 // [2] = campus
-                // [3] = total_runners
+                // [3] = totalRunners
                 // [4] = photo
                 // Store the data, we don't store our code because we have it already.
                 let data = serverData.split(',');
                 _this.setState({name : data[0]});
                 _this.setState({campus : data[2]});
-                _this.setState({total_runners : data[3]});
+                _this.setState({totalRunners : data[3]});
                 _this.setState({photo: data[4]});
 
-                // Save runner information in our rank table.
+                // Save runner information in our rank table, here we have our full ranking table.
+                // TODO: Investigate why 2, it affects the ranking table that is printed in the conole.
                 let pos = 1;
-                for(let i = MAX_USER_INFO; i < data.length - 1;)
+                for(let i = INDEX_START_RANKING; i < data.length - 2;)
                 {
-                    // Probably it would be a good idea to have this in the state variables? 
                     let runner = {
                         position: 0,
                         code: "",
                         distance: 0,
                         time: 0,
-                        points: 0.
                     }
 
                     // Assign the corresponding values to our runner.
@@ -81,51 +90,64 @@ export default class Datos extends Component {
                     runner['code'] = data[i++];
                     runner['distance'] = data[i++];
                     runner['time'] = data[i++];
-                    runner['points'] = parseInt(data[i++]);
-                    _this.state.ranking_table.push(runner);
-                }
-
-                // Save the remaining information from our current runner logged.
-                _this.state.ranking_table.find((element) => 
-                {
-                    if(element.code === _this.state.code) 
+                    _this.state.rankingTable.push(runner);
+                    
+                    // We found the current runner in our full rank table.
+                    if(runner['code'] == _this.state.code) 
                     {
-                        _this.setState({position : element.position});
-                        _this.setState({distance : element.distance});
-                        _this.setState({time : element.time});
-                        _this.setState({points : element.points});
+                        _this.setState({position : runner['position']});
+                        _this.setState({distance : runner['distance']});
+                        _this.setState({time : runner['time']});
                     }
-                });
-
-                // Save the remaining data from our current runner logged.
-                if(_this.state.ranking_table['code'] == _this.state.code) 
+                }
+                
+                // Save top three runners.
+                _this.state.topThree.push(_this.state.rankingTable[0]);
+                _this.state.topThree.push(_this.state.rankingTable[1]);
+                _this.state.topThree.push(_this.state.rankingTable[2]);
+                
+                // There is information from our runner that is not in the top three.
+                // This will add a new row in our ranking table.
+                let last_element = data.length - 1;
+                if(data[last_element] != "")
                 {
-                    _this.setState({ position : runner['position']});
-                    _this.setState({ distance : runner['distance']});
-                    _this.setState({ time : runner['time']});
-                    _this.setState({ points : runner['points']});
+                    // Our runner is not in our ranking.
+                    _this.setState({inRanking : false});
+                    
+                    let runner = {
+                        position: 0,
+                        code: "",
+                        distance: 0,
+                        time: 0,
+                    }
+
+                    runner['position'] = _this.state.position;
+                    runner['code'] = _this.state.code;
+                    runner['distance'] = _this.state.distance;
+                    runner['time'] = _this.state.time;
+                    _this.state.topThree.push(runner);
                 }
                 
                 // Give ranking table information and save every item in our ranking table,
                 // this will be used to show in the cellphone.
-                const ranking_table_formatted = _this.state.ranking_table.map((item) =>
+                const rankingTable_formatted = _this.state.topThree.map((item) =>
                     <Text style={{ fontWeight : "bold" }}>
-                        Posicion { item['position'] } : { item['code'] } | Distancia: { item['distance'] } | 
-                        Tiempo: { item['time'] } {"\n"} Puntaje: {item['points']} {"\n"}
+                        Posicion { item['position'] } : { item['code'] } | Distancia: { item['distance'] }m | 
+                        Tiempo: { item['time'] } {"\n"} 
                         -------------------- {"\n"}
                     </Text>
                 );
-                
+
                 // I'm pretty sure there is a javascript way to do this, just some log information to debug.
-                for(let i = 0; i < _this.state.ranking_table.length; ++i) {
-                    console.log("Lugar " + _this.state.ranking_table[i].position + ":" + _this.state.ranking_table[i].code + " | " + 
-                                "Distancia:" + _this.state.ranking_table[i].distance + " | " + 
-                                "Tiempo: " + _this.state.ranking_table[i].time + " | " + 
-                                "Puntaje: " + _this.state.ranking_table[i].points);
+                for(let i = 0; i < _this.state.rankingTable.length; ++i) 
+                {
+                    console.log("Lugar " + _this.state.rankingTable[i].position + ":" + _this.state.rankingTable[i].code + " | " + 
+                                "Distancia:" + _this.state.rankingTable[i].distance + " | " + 
+                                "Tiempo: " + _this.state.rankingTable[i].time);
                 }
 
                 // At this point our ranking table has a valid format.
-                _this.setState({ranking_table : ranking_table_formatted});
+                _this.setState({rankingTable : rankingTable_formatted});
                 
                 // Save the most updated information
                 // AsyncStorage.setItem('data', JSON.stringify([data[0], data[1], data[2], data[3], data[4]]));
@@ -200,21 +222,20 @@ export default class Datos extends Component {
             
                         {/* Body information showing total number of runners and ranking. */}
                         <View>
-                            <Text style={styles.TextoP}> Corredores totales: {this.state.total_runners} </Text>
+                            <Text style={styles.TextoP}> Corredores totales: {this.state.totalRunners} </Text>
                             <Text style={styles.TextoP}> Ranking de Corredores: </Text>
                         </View>
             
                         {/* Scroll box using flex to scroll. */}
                         <View style={{flex : 1}}>
                             <ScrollView>
-                                <Text style={styles.textoRanking}> {this.state.ranking_table} </Text>
+                                <Text style={styles.textoRanking}> {this.state.rankingTable} </Text>
                             </ScrollView>
                         </View>
             
                         {/* Current runner logged info */}
                         <View>
-                            <Text style={styles.TextoP}> Datos del Corredor: {this.state.name} </Text>
-                            <Text style={styles.TextoP}> Posicion: {this.state.position} | Distancia: {this.state.distance} Tiempo: {this.state.time} | Puntos: {this.state.points} </Text> 
+                            {this.getRunnerInfo(this.state.inRanking)}
                         </View>
 
                         {/* Button to go to login window */}
