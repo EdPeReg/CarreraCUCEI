@@ -27,7 +27,8 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 // Create an object.
-import LOGIN from "./Menu"
+import LOGIN from "./Mapa"
+// import LOGIN from "./Menu"
 
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
