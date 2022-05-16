@@ -150,7 +150,7 @@ export default class Datos extends Component {
                 _this.setState({rankingTable : rankingTable_formatted});
                 
                 // Save the most updated information
-                // AsyncStorage.setItem('data', JSON.stringify([data[0], data[1], data[2], data[3], data[4]]));
+                AsyncStorage.setItem('data', JSON.stringify([data[0], data[1], data[2], data[3], data[4]]));
             }
         }
         xhttp.open("GET", "https://carreracuceipr.000webhostapp.com/Count.php?codigo="+this.state.code, true);
@@ -168,6 +168,8 @@ export default class Datos extends Component {
 
     /* Will draw the content returning how it will looks like; this represents our hamburger menu. */
     drawerContent = () => {
+        const navigation = this.context;
+
         return (
             <View style={styles.animatedBox}>
                 <View style={styles.imgAvatar}>
@@ -187,6 +189,11 @@ export default class Datos extends Component {
 
                 <View style={{marginTop: 10}}>
                     <Button title="Cerrar" onPress={this.toggleOpen}></Button>
+                </View>
+
+                {/* Go to login window. */}
+                <View style={{marginTop: 10}}>
+                    <Button title="Cerrar Sesion" onPress={() => navigation.navigate('Login')}></Button>
                 </View>
             </View>
         );
@@ -238,9 +245,9 @@ export default class Datos extends Component {
                             {this.getRunnerInfo(this.state.inRanking)}
                         </View>
 
-                        {/* Button to go to login window */}
+                        {/* Button to go to map window */}
                         <View style={styles.btn}>
-                            <Button title="Cerrar Sesión" color="#3d71d9" onPress={() => navigation.navigate('Login')}> </Button>
+                            <Button title="Mapa" color="#3d71d9" onPress={() => navigation.navigate('Mapa')}> </Button>
                         </View>
                     </ImageBackground>
                 </MenuDrawer>
