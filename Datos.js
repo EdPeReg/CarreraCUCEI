@@ -193,7 +193,7 @@ export default class Datos extends Component {
 
                 {/* Go to login window. */}
                 <View style={{marginTop: 10}}>
-                    <Button title="Cerrar Sesion" onPress={() => navigation.navigate('Login')}></Button>
+                    <Button title="Mapa" onPress={() => navigation.navigate('Mapa')}></Button>
                 </View>
             </View>
         );
@@ -247,7 +247,7 @@ export default class Datos extends Component {
 
                         {/* Button to go to map window */}
                         <View style={styles.btn}>
-                            <Button title="Mapa" color="#3d71d9" onPress={() => navigation.navigate('Mapa')}> </Button>
+                            <Button title="Cerrar Sesion" color="#3d71d9" onPress={() => navigation.navigate('Login')}> </Button>
                         </View>
                     </ImageBackground>
                 </MenuDrawer>
