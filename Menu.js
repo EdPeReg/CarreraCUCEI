@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LOGIN from "./Login";
 import REGISTRO from "./Registro";
 import DATOS from "./Datos";
+import MAPA from "./Mapa";
 
 export default class Menu extends Component {
   constructor(props) {
@@ -25,6 +26,7 @@ export default class Menu extends Component {
               <Stack.Screen name="Login" component={LOGIN} />
               <Stack.Screen name="Registro" component={REGISTRO} />
               <Stack.Screen name="Datos" component={DATOS} />
+              <Stack.Screen name="Mapa" component={MAPA} />
           </Stack.Navigator>
         </NavigationContainer>
     );
